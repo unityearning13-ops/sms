@@ -1,0 +1,6 @@
+{
+  "name": "Messages",
+  "description": "Messages application with bKash SMS integration and Unity Earning Learning Platform withdrawal portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

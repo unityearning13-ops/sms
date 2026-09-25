@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity Earning Learning Platform - Withdraw</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-xl p-6 sm:p-8 space-y-6 border border-slate-200">
+        <div class="text-center space-y-1">
+            <h1 class="text-xl font-extrabold text-slate-900">Unity Earning Learning Platform</h1>
+            <p class="text-xs font-semibold text-blue-600 tracking-wide uppercase">Secure Withdrawal Web Portal</p>
+        </div>
+
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-5 shadow-md flex justify-between items-center">
+            <div>
+                <p class="text-xs text-blue-100 font-medium">Available Balance</p>
+                <h2 class="text-2xl font-black mt-1">৳ 3,400.00</h2>
+            </div>
+            <span class="bg-white/25 text-white text-xs px-3 py-1 rounded-full font-bold backdrop-blur-sm">Fixed</span>
+        </div>
+
+        <div class="space-y-4">
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Select Payment Method</label>
+            
+            <div class="grid grid-cols-2 gap-3" id="methodGrid">
+                <div onclick="selectMethod('bKash', this)" class="method-card border-2 border-pink-600 bg-pink-50/60 rounded-2xl p-3 flex items-center space-x-3 cursor-pointer transition-all">
+                    <div class="w-8 h-8 rounded-xl bg-pink-600 text-white flex items-center justify-center font-bold text-sm shadow">b</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">bKash</p>
+                        <p class="text-[10px] text-slate-500 font-medium">বিকাশ</p>
+                    </div>
+                </div>
+                <div onclick="selectMethod('Nagad', this)" class="method-card border border-slate-200 bg-slate-50/60 rounded-2xl p-3 flex items-center space-x-3 cursor-pointer transition-all hover:bg-slate-100">
+                    <div class="w-8 h-8 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-sm shadow">N</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">Nagad</p>
+                        <p class="text-[10px] text-slate-500 font-medium">নগদ</p>
+                    </div>
+                </div>
+                <div onclick="selectMethod('Rocket', this)" class="method-card border border-slate-200 bg-slate-50/60 rounded-2xl p-3 flex items-center space-x-3 cursor-pointer transition-all hover:bg-slate-100">
+                    <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center font-bold text-sm shadow">R</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">Rocket</p>
+                        <p class="text-[10px] text-slate-500 font-medium">রকেট</p>
+                    </div>
+                </div>
+                <div onclick="selectMethod('Upay', this)" class="method-card border border-slate-200 bg-slate-50/60 rounded-2xl p-3 flex items-center space-x-3 cursor-pointer transition-all hover:bg-slate-100">
+                    <div class="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow">U</div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">Upay</p>
+                        <p class="text-[10px] text-slate-500 font-medium">উপায়</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label id="accountLabel" class="block text-xs font-bold text-slate-700">bKash Account Number</label>
+                <input type="tel" id="accountNumber" placeholder="e.g. 01712345678" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-slate-50/50 font-medium">
+            </div>
+
+            <div class="space-y-1">
+                <label class="block text-xs font-bold text-slate-700">Withdrawal Amount (BDT)</label>
+                <input type="number" id="amountInput" placeholder="Enter amount (e.g. 1000)" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 bg-slate-50/50 font-medium">
+            </div>
+
+            <button onclick="submitWithdrawal()" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-extrabold py-3.5 rounded-xl text-sm shadow-lg shadow-blue-600/30 transition duration-200">
+                Create Request (উইথড্র রিকোয়েস্ট)
+            </button>
+        </div>
+    </div>
+
+    <div id="successModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-3xl font-black">✓</div>
+            <h3 class="text-lg font-extrabold text-slate-900">পেমেন্ট সফলভাবে রিসিভ হয়েছে!</h3>
+            <p class="text-xs text-slate-600 font-medium">আপনার উইথড্র রিকোয়েস্ট ফায়ারবেস ডাটাবেজে সফলভাবে সংরক্ষিত হয়েছে।</p>
+            <button onclick="closeModal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 rounded-xl text-sm shadow-md">ঠিক আছে (OK)</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_FIREBASE_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let selectedMethod = 'bKash';
+
+        function selectMethod(method, element) {
+            selectedMethod = method;
+            document.getElementById('accountLabel').innerText = `${method} Account Number`;
+            
+            document.querySelectorAll('.method-card').forEach(card => {
+                card.className = "method-card border border-slate-200 bg-slate-50/60 rounded-2xl p-3.5 flex items-center space-x-3 cursor-pointer transition-all hover:bg-slate-100";
+            });
+            element.className = "method-card border-2 border-pink-600 bg-pink-50/60 rounded-2xl p-3.5 flex items-center space-x-3 cursor-pointer transition-all";
+        }
+
+        async function submitWithdrawal() {
+            const acc = document.getElementById('accountNumber').value.trim();
+            const amt = document.getElementById('amountInput').value.trim();
+
+            if (!acc) {
+                alert('দয়া করে অ্যাকাউন্ট নম্বর লিখুন!');
+                return;
+            }
+            if (!amt || Number(amt) <= 0) {
+                alert('দয়া করে সঠিক অ্যামাউন্ট লিখুন!');
+                return;
+            }
+
+            const trxId = 'TRX' + Math.random().toString(36).substring(2, 10).toUpperCase();
+            const now = new Date().toLocaleString();
+
+            try {
+                await db.collection('withdrawals').add({
+                    method: selectedMethod,
+                    accountNumber: acc,
+                    amount: Number(amt),
+                    trxId: trxId,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    formattedDateTime: now,
+                    status: 'Success'
+                });
+
+                document.getElementById('successModal').classList.remove('hidden');
+            } catch (e) {
+                alert('ত্রুটি: ' + e.message);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            document.getElementById('accountNumber').value = '';
+            document.getElementById('amountInput').value = '';
+        }
+    </script>
+</body>
+</html>
